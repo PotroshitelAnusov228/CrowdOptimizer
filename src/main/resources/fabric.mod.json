@@ -3,7 +3,7 @@
   "id": "crowdoptimizer",
   "version": "${version}",
   "name": "CrowdOptimizer",
-  "description": "Automatically adjusts a few client visual settings when FPS drops.",
+  "description": "Automatically adjusts entity shadows based on FPS without changing particle settings.",
   "environment": "client",
   "entrypoints": {
     "client": ["dev.crowdoptimizer.CrowdOptimizerClient"]
