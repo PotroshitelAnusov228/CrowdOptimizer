@@ -32,6 +32,6 @@ jobs:
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
-          name: CrowdOptimizer-0.1.1
-          path: build/libs/*-0.1.1.jar
+          name: CrowdOptimizer-0.1.2
+          path: build/libs/*-0.1.2.jar
           if-no-files-found: error
