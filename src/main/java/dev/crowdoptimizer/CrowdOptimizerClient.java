@@ -4,12 +4,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ParticleStatus;
 
 /**
- * Changes only vanilla particle density and entity shadow settings.
- * It deliberately does not modify entity rendering, models, textures,
- * animation ticking, player labels, or name-tag rendering.
+ * Adjusts entity shadows based on FPS.
+ * Particle settings and all entity appearance/rendering are left untouched.
  */
 public final class CrowdOptimizerClient implements ClientModInitializer {
     private static final int SAMPLE_INTERVAL_TICKS = 20;
@@ -32,9 +30,7 @@ public final class CrowdOptimizerClient implements ClientModInitializer {
     private int lowSamples;
     private int highSamples;
     private boolean settingsCaptured;
-
     private boolean originalEntityShadows;
-    private ParticleStatus originalParticles;
 
     @Override
     public void onInitializeClient() {
@@ -51,7 +47,8 @@ public final class CrowdOptimizerClient implements ClientModInitializer {
         }
 
         if (!settingsCaptured) {
-            captureSettings(client);
+            originalEntityShadows = client.options.entityShadows().get();
+            settingsCaptured = true;
             applyTier(client);
         }
 
@@ -61,12 +58,6 @@ public final class CrowdOptimizerClient implements ClientModInitializer {
 
         tickCounter = 0;
         updateTier(client, client.getFps());
-    }
-
-    private void captureSettings(Minecraft client) {
-        originalEntityShadows = client.options.entityShadows().get();
-        originalParticles = client.options.particles().get();
-        settingsCaptured = true;
     }
 
     private void updateTier(Minecraft client, int fps) {
@@ -109,29 +100,13 @@ public final class CrowdOptimizerClient implements ClientModInitializer {
     }
 
     private void applyTier(Minecraft client) {
-        switch (tier) {
-            case HIGH -> {
-                client.options.entityShadows().set(originalEntityShadows);
-                client.options.particles().set(originalParticles);
-            }
-            case BALANCED -> {
-                client.options.entityShadows().set(originalEntityShadows);
-                client.options.particles().set(
-                    originalParticles == ParticleStatus.ALL
-                        ? ParticleStatus.DECREASED
-                        : originalParticles
-                );
-            }
-            case ECONOMY -> {
-                client.options.entityShadows().set(false);
-                client.options.particles().set(ParticleStatus.MINIMAL);
-            }
-        }
+        client.options.entityShadows().set(
+            tier == Tier.ECONOMY ? false : originalEntityShadows
+        );
     }
 
     private void restoreSettings(Minecraft client) {
         client.options.entityShadows().set(originalEntityShadows);
-        client.options.particles().set(originalParticles);
         settingsCaptured = false;
     }
 
