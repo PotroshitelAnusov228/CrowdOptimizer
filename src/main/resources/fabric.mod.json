@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "crowdoptimizer",
+  "version": "${version}",
+  "name": "CrowdOptimizer",
+  "description": "Automatically adjusts a few client visual settings when FPS drops.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.crowdoptimizer.CrowdOptimizerClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
